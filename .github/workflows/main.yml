@@ -31,7 +31,7 @@ jobs:
       
       - name: Make executable
         run:
-          find dist/* -type f -exec chmod +x {} \;
+          find dist -type f -exec chmod +x {} \;
           
       - name: Upload artifacts
         uses: skx/github-action-publish-binaries@master
