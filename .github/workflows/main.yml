@@ -28,6 +28,10 @@ jobs:
           ldflags: -s -w
           buildmode: default
           trimpath: true
+      
+      - name: Make executable
+        run:
+          chmod +x ./*
           
       - name: Upload artifacts
         uses: skx/github-action-publish-binaries@master
