@@ -1,0 +1,37 @@
+name: Release
+on:
+  release:
+    types: 
+      - created
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build app
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Generate executables
+        uses: crazy-max/ghaction-xgo@v2
+        with:
+          xgo_version: latest
+          go_version: 1.18
+          dest: dist
+          prefix: em-image-downloader
+          targets: windows/amd64,darwin/amd64
+          v: true
+          x: false
+          race: false
+          ldflags: -s -w
+          buildmode: default
+          trimpath: true
+          
+      - name: Upload artifacts
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: "./dist/*"
