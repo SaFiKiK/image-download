@@ -28,10 +28,6 @@ jobs:
           ldflags: -s -w
           buildmode: default
           trimpath: true
-
-      - name: Set chmod
-        run:
-          find dist -type f -exec chmod +x {} \;
       
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v2
@@ -66,6 +62,10 @@ jobs:
           security import Certis.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 12345 build.keychain
           /usr/bin/codesign --force -s "self-signed" dist/em-image-downloader-darwin-amd64 -v
+
+      - name: Set chmod
+        run:
+          find dist -type f -exec chmod +x {} \;
 
       - name: 'Tar files'
         run: tar -cvf my_files.tar dist
