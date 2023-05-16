@@ -88,8 +88,22 @@ jobs:
           /usr/bin/codesign --force -s $MACOS_CERT_NAME dist/em-image-downloader-darwin-amd64.app -v
 
       - name: 'Tar files'
-        run: tar -zcvf my_files.tar.gz dist/*
-      
+        run: tar -zcvf em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
+
+      - name: Publish Windows
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: dist/em-image-downloader-windows-amd64.exe
+
+      - name: Publish MacOS
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: em-image-downloader-darwin-amd64.tar.gz
+
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v3
         with:
