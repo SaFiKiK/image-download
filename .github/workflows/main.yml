@@ -75,3 +75,8 @@ jobs:
         with:
           name: my-zipped-files
           path: my_files.tar
+
+      - name: 'Delete Old Artifact'
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: my-artifact
