@@ -65,7 +65,7 @@ jobs:
           security unlock-keychain -p 12345 build.keychain
           security import Certis.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 12345 build.keychain
-          /usr/bin/codesign --force -s 295736596 dist/em-image-downloader-darwin-amd64 -v
+          /usr/bin/codesign --force -s "self-signed" dist/em-image-downloader-darwin-amd64 -v
 
       - name: 'Tar files'
         run: tar -cvf my_files.tar dist
