@@ -12,7 +12,7 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@latest
+        uses: actions/checkout@v3
       
       - name: Generate Windows Executable
         uses: crazy-max/ghaction-xgo@v2
@@ -45,7 +45,7 @@ jobs:
           trimpath: true
 
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v3
         with:
           name: tmp-artifact
           path: dist
@@ -57,10 +57,10 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@latest
+        uses: actions/checkout@v3
     
       - name: Download Artifact
-        uses: actions/download-artifact@latest
+        uses: actions/download-artifact@v3
         with:
           name: tmp-artifact
           path: dist
@@ -91,7 +91,7 @@ jobs:
         run: tar -zcvf my_files.tar.gz dist/*
       
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v3
         with:
           name: all_files
           path: my_files.tar.gz
