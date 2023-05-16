@@ -1,0 +1,25 @@
+name: TEST Release
+on:
+  release:
+    types: 
+      - created
+  workflow_dispatch:
+
+jobs:
+  sign:
+    name: Sign Mac App Test
+    runs-on: macos-latest
+    steps:
+      - name: Setup certificate
+        env: 
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_SERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERT_PWD }}
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > Certis.p12
+          security create-keychain -p 12345 build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p 12345 build.keychain
+          security import Certis.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 12345 build.keychain
+          security find-identity -v
+          /usr/bin/codesign --force -s 295736596 dist/em-image-downloader-darwin-amd64 -v
