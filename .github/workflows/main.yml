@@ -57,7 +57,7 @@ jobs:
       - name: Setup certificate
         env: 
           MACOS_CERTIFICATE: ${{ secrets.MACOS_SERTIFICATE }}
-          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERT_PWD }}
         run: |
           echo $MACOS_CERTIFICATE | base64 --decode > Certis.p12
           security create-keychain -p 12345 build.keychain
