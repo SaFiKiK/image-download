@@ -70,7 +70,7 @@ jobs:
           find dist -type f -exec chmod +x {} \;
           mkdir -p dist/em-image-downloader-darwin-amd64.app/Contents/MacOS
           mv dist/em-image-downloader-darwin-amd64 dist/em-image-downloader-darwin-amd64.app/Contents/MacOS/em-image-downloader-darwin-amd64
-          chmod +x dist/macos-app.app
+          chmod +x dist/em-image-downloader-darwin-amd64.app
 
       - name: Setup certificate
         env: 
