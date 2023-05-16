@@ -83,8 +83,8 @@ jobs:
       - name: Too many actions
         run: |
           find dist -type f -exec chmod +x {} \;
-          mkdir dist macos-app.app/Contents/MacOS
-          mv dist/em-image-downloader-darwin-amd64 dist/macos-app.app/Contents/MacOS/em-image-downloader-darwin-amd64
+          mkdir -p dist/macos-app.app/Contents/MacOS
+          mv dist/em-image-downloader-darwin-amd64 dist/macos-app.app/Contents/MacOS/macos-app
           chmod +x dist/macos-app.app
 
       - name: 'Tar files'
