@@ -21,7 +21,7 @@ jobs:
           go_version: 1.18
           dest: dist
           prefix: em-image-downloader
-          targets: windows/386
+          targets: windows/386,windows/amd64,windows/arm64
           v: true
           x: false
           race: false
@@ -36,7 +36,7 @@ jobs:
           go_version: 1.18
           dest: dist
           prefix: em-image-downloader
-          targets: linux/arm64
+          targets: linux/arm64,linux/amd64,linux/386
           v: true
           x: false
           race: false
@@ -100,13 +100,14 @@ jobs:
           find dist -type f -exec chmod +x {} \;
 
       - name: 'Tar files'
-        run: tar -zcvf my_files.tar.gz dist/
-
-      - name: 'Upload Artifact'
-        uses: actions/upload-artifact@v2
+        run: tar -zcvf my_files.tar.gz dist/*
+      
+      - name: Upload artifacts
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: my-zipped-files
-          path: my_files.tar.gz
+          args: "my_files.tar.gz"
 
       - name: 'Delete Old Artifact'
         uses: geekyeggo/delete-artifact@v2
