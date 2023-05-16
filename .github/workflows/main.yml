@@ -32,17 +32,11 @@ jobs:
       - name: Make executable
         run:
           find dist -type f -exec chmod +x {} \;
-      
-      - name: Zip Files
-        uses: vimtor/action-zip@v1
+      - name: 'Tar files'
+        run: tar -cvf my_files.tar dist
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
         with:
-          files: dist
-          dest: Zipped.zip
-          
-          
-      - name: Upload artifacts
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: "Zipped.zip"
+          name: my-artifact
+          path: my_files.tar  
