@@ -41,6 +41,7 @@ jobs:
 
   sign:
     name: Sign Mac App
+    needs: build
     runs-on: macos-latest
     steps:
     
