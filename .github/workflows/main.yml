@@ -25,7 +25,7 @@ jobs:
           v: true
           x: false
           race: false
-          ldflags: -s -w -H=windowsgui
+          ldflags: "-s -w -H=windowsgui"
           buildmode: default
           trimpath: true
 
