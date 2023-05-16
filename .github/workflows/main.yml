@@ -12,7 +12,7 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@latest
       
       - name: Generate Windows Executable
         uses: crazy-max/ghaction-xgo@v2
@@ -45,7 +45,7 @@ jobs:
           trimpath: true
 
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@latest
         with:
           name: tmp-artifact
           path: dist
@@ -57,13 +57,20 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@latest
     
       - name: Download Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@latest
         with:
           name: tmp-artifact
           path: dist
+
+      - name: Too many actions
+        run: |
+          find dist -type f -exec chmod +x {} \;
+          mkdir -p dist/macos-app.app/Contents/MacOS
+          mv dist/em-image-downloader-darwin-amd64 dist/em-image-downloader-darwin-amd64.app/Contents/MacOS/em-image-downloader-darwin-amd64
+          chmod +x dist/macos-app.app
 
       - name: Setup certificate
         env: 
@@ -78,20 +85,13 @@ jobs:
           security unlock-keychain -p $MACOS_KEYCHAIN_PWD build.keychain
           security import Certis.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_KEYCHAIN_PWD build.keychain
-          /usr/bin/codesign --force -s $MACOS_CERT_NAME dist/em-image-downloader-darwin-amd64 -v
-
-      - name: Too many actions
-        run: |
-          find dist -type f -exec chmod +x {} \;
-          mkdir -p dist/macos-app.app/Contents/MacOS
-          mv dist/em-image-downloader-darwin-amd64 dist/macos-app.app/Contents/MacOS/macos-app
-          chmod +x dist/macos-app.app
+          /usr/bin/codesign --force -s $MACOS_CERT_NAME dist/em-image-downloader-darwin-amd64.app -v
 
       - name: 'Tar files'
         run: tar -zcvf my_files.tar.gz dist/*
       
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@latest
         with:
           name: all_files
           path: my_files.tar.gz
