@@ -13,36 +13,39 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v2
-
+      
       - name: Generate Windows Executable
-        uses: crazy-max/ghaction-xgo@v2
+        uses: wangyoucao577/go-release-action@v1
         with:
-          xgo_version: latest
-          go_version: 1.18
-          dest: dist
-          prefix: em-image-downloader
-          targets: windows/amd64
-          v: true
-          x: false
-          race: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: windows
+          goarch: amd64
+          goversion: 1.18
+          project_path: dist
+          binary_name: em-image-downloader
           ldflags: -s -w -H=windowsgui
-          buildmode: default
-          trimpath: true
-
-      - name: Generate Mac Executable
-        uses: crazy-max/ghaction-xgo@v2
+      
+      - name: Generate MacOS Executable
+        uses: wangyoucao577/go-release-action@v1
         with:
-          xgo_version: latest
-          go_version: 1.18
-          dest: dist
-          prefix: em-image-downloader
-          targets: darwin/amd64
-          v: true
-          x: false
-          race: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: darwin
+          goarch: amd64
+          goversion: 1.18
+          project_path: dist
+          binary_name: em-image-downloader
           ldflags: -s -w
-          buildmode: default
-          trimpath: true
+      
+      - name: Generate Linux Executable
+        uses: wangyoucao577/go-release-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: linux
+          goarch: amd64
+          goversion: 1.18
+          project_path: dist
+          binary_name: em-image-downloader
+          ldflags: -s -w
       
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v2
@@ -63,7 +66,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: my-artifact
-          path: dist
+          path: dist.zip
+      
+      - name: Unzip
+        run: unzip dist.zip
 
       - name: Setup certificate
         env: 
