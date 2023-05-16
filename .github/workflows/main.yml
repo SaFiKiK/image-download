@@ -29,6 +29,21 @@ jobs:
           buildmode: default
           trimpath: true
 
+      - name: Generate Linux Executable
+        uses: crazy-max/ghaction-xgo@v2
+        with:
+          xgo_version: latest
+          go_version: 1.18
+          dest: dist
+          prefix: em-image-downloader
+          targets: linux/arm64
+          v: true
+          x: false
+          race: false
+          ldflags: -s -w
+          buildmode: default
+          trimpath: true
+
       - name: Generate Mac Executable
         uses: crazy-max/ghaction-xgo@v2
         with:
@@ -91,7 +106,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: my-zipped-files
-          path: dist
+          path: my_files.tar.gz
 
       - name: 'Delete Old Artifact'
         uses: geekyeggo/delete-artifact@v2
