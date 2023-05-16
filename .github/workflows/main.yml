@@ -21,7 +21,7 @@ jobs:
           go_version: 1.18
           dest: dist
           prefix: em-image-downloader
-          targets: windows/amd64,darwin/amd64
+          targets: windows/amd64,darwin/amd64,linux/amd64
           v: true
           x: false
           race: false
