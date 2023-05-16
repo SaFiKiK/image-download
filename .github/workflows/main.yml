@@ -14,14 +14,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Generate executables
+      - name: Generate Windows Executable
         uses: crazy-max/ghaction-xgo@v2
         with:
           xgo_version: latest
           go_version: 1.18
           dest: dist
           prefix: em-image-downloader
-          targets: windows/amd64,darwin/amd64,linux/amd64
+          targets: windows/amd64
+          v: true
+          x: false
+          race: false
+          ldflags: -s -w -H=windowsgui
+          buildmode: default
+          trimpath: true
+
+      - name: Generate Mac Executable
+        uses: crazy-max/ghaction-xgo@v2
+        with:
+          xgo_version: latest
+          go_version: 1.18
+          dest: dist
+          prefix: em-image-downloader
+          targets: darwin/amd64
           v: true
           x: false
           race: false
@@ -54,27 +69,29 @@ jobs:
         env: 
           MACOS_CERTIFICATE: ${{ secrets.MACOS_SERTIFICATE }}
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERT_PWD }}
+          MACOS_KEYCHAIN_PWD: ${{ secrets.MACOS_KEYCHAIN_PWD }}
+          MACOS_CERT_NAME: ${{ secrets.MACOS_CERT_NAME }}
         run: |
           echo $MACOS_CERTIFICATE | base64 --decode > Certis.p12
-          security create-keychain -p 12345 build.keychain
+          security create-keychain -p $MACOS_KEYCHAIN_PWD build.keychain
           security default-keychain -s build.keychain
-          security unlock-keychain -p 12345 build.keychain
+          security unlock-keychain -p $MACOS_KEYCHAIN_PWD build.keychain
           security import Certis.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 12345 build.keychain
-          /usr/bin/codesign --force -s "self-signed" dist/em-image-downloader-darwin-amd64 -v
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_KEYCHAIN_PWD build.keychain
+          /usr/bin/codesign --force -s $MACOS_CERT_NAME dist/em-image-downloader-darwin-amd64 -v
 
       - name: Set chmod
         run:
           find dist -type f -exec chmod +x {} \;
 
       - name: 'Tar files'
-        run: tar -cvf my_files.tar dist
+        run: tar -zcvf my_files.tar.gz dist/
 
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v2
         with:
           name: my-zipped-files
-          path: my_files.tar
+          path: my_files.tar.gz
 
       - name: 'Delete Old Artifact'
         uses: geekyeggo/delete-artifact@v2
