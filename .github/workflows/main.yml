@@ -91,7 +91,7 @@ jobs:
         run: tar -zcvf em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
       
       - name: Delete Mac App from Dist
-        run: rm dist/em-image-downloader-darwin-amd64.app
+        run: rm -R dist/em-image-downloader-darwin-amd64.app
 
       - name: Upload Signed Mac Artifact
         uses: actions/upload-artifact@v3
