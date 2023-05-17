@@ -89,11 +89,6 @@ jobs:
 
       - name: Tar Mac App
         run: tar -zcvf em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
-      
-      - name: Delete Mac App from Dist
-        run: |
-         rm -R dist/em-image-downloader-darwin-amd64.app
-         rm dist/em-image-downloader-darwin-amd64
 
       - name: Upload Signed Mac Artifact
         uses: actions/upload-artifact@v3
@@ -121,7 +116,10 @@ jobs:
           with:
             name: built-apps-artifact
             path: dist
-        
+
+        - name: Delete unsigned Mac App from Dist
+          run: rm dist/em-image-downloader-darwin-amd64
+
         - name: Publish Unsigned Apps
           uses: skx/github-action-publish-binaries@master
           env:
@@ -129,7 +127,7 @@ jobs:
           with:
             args: dist/*
 
-        - name: Publish MacOS
+        - name: Publish Signed Mac App
           uses: skx/github-action-publish-binaries@master
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
