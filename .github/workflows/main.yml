@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build app
+    name: Build Apps
     runs-on: ubuntu-22.04
     steps:
 
@@ -44,11 +44,18 @@ jobs:
           buildmode: default
           trimpath: true
 
-      - name: 'Upload Artifact'
+      - name: Publish Windows
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: dist/em-image-downloader-windows-amd64.exe
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: tmp-artifact
-          path: dist
+          path: dist/em-image-downloader-darwin-amd64
 
   sign:
     name: Sign Mac App
@@ -87,30 +94,43 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_KEYCHAIN_PWD build.keychain
           /usr/bin/codesign --force -s $MACOS_CERT_NAME dist/em-image-downloader-darwin-amd64.app -v
 
-      - name: 'Tar files'
+      - name: Tar App
         run: tar -zcvf em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
 
-      - name: Publish Windows
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: dist/em-image-downloader-windows-amd64.exe
-
-      - name: Publish MacOS
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: em-image-downloader-darwin-amd64.tar.gz
-
-      - name: 'Upload Artifact'
+      - name: Upload Mac Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: all_files
-          path: my_files.tar.gz
-
-      - name: 'Delete Old Artifact'
+          name: mac-artifact
+          path: em-image-downloader-darwin-amd64.tar.gz
+      
+      - name: Delete Tmp Artifact
         uses: geekyeggo/delete-artifact@v2
         with:
           name: tmp-artifact
+    
+  publishmac:
+    name: Publish Mac App
+    needs: sign
+    runs-on: ubuntu-latest
+    steps:
+    
+        - name: Checkout
+          uses: actions/checkout@v3
+
+        - name: Download Mac Artifact
+          uses: actions/download-artifact@v3
+          with:
+            name: mac-artifact
+            path: dist
+
+        - name: Publish MacOS
+          uses: skx/github-action-publish-binaries@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            args: dist/em-image-downloader-darwin-amd64.tar.gz
+
+        - name: Delete Mac Artifact
+          uses: geekyeggo/delete-artifact@v2
+          with:
+            name: mac-artifact
