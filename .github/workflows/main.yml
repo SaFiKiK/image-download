@@ -88,13 +88,20 @@ jobs:
           /usr/bin/codesign --force -s $MACOS_CERT_NAME dist/em-image-downloader-darwin-amd64.app -v
 
       - name: Tar Mac App
-        run: tar -zcvf em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
+        run: |
+          mkdir to_upload
+          tar -zcvf to_artifact/em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
+      
+      - name: Move Other Apps to Artifact Folder
+        run: |
+          rm -R dist/em-image-downloader-darwin-amd64.app
+          mv dist/* to_upload
 
-      - name: Upload Signed Mac Artifact
+      - name: Upload Signed Apps Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: signed-mac-artifact
-          path: em-image-downloader-darwin-amd64.tar.gz
+          name: signed-apps-artifact
+          path: to_upload
     
   publishmac:
     name: Publish Apps
@@ -105,41 +112,22 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v3
 
-        - name: Download Signed Mac Artifact
+        - name: Download Signed Apps Artifact
           uses: actions/download-artifact@v3
           with:
-            name: signed-mac-artifact
-            path: signed
-        
-        - name: Download Built Apps Artifact
-          uses: actions/download-artifact@v3
-          with:
-            name: built-apps-artifact
+            name: signed-apps-artifact
             path: dist
 
-        - name: Delete unsigned Mac App from Dist
-          run: rm dist/em-image-downloader-darwin-amd64
-
-        - name: Publish Unsigned Apps
+        - name: Publish Apps
           uses: skx/github-action-publish-binaries@master
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             args: dist/*
 
-        - name: Publish Signed Mac App
-          uses: skx/github-action-publish-binaries@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            args: signed/em-image-downloader-darwin-amd64.tar.gz
-
-        - name: Delete Built Apps Artifact
+        - name: Delete All Artifacts
           uses: geekyeggo/delete-artifact@v2
           with:
-            name: built-apps-artifact
-        
-        - name: Delete Signed Mac Artifact
-          uses: geekyeggo/delete-artifact@v2
-          with:
-            name: signed-mac-artifact
+            name: |
+              signed-apps-artifact
+              built-apps-artifact
