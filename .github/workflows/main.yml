@@ -44,18 +44,11 @@ jobs:
           buildmode: default
           trimpath: true
 
-      - name: Publish Windows
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: dist/em-image-downloader-windows-amd64.exe
-
-      - name: Upload Artifact
+      - name: Upload Built Apps Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: tmp-artifact
-          path: dist/em-image-downloader-darwin-amd64
+          name: built-apps-artifact
+          path: dist
 
   sign:
     name: Sign Mac App
@@ -66,20 +59,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
     
-      - name: Download Artifact
+      - name: Download Built Apps Artifact
         uses: actions/download-artifact@v3
         with:
-          name: tmp-artifact
+          name: built-apps-artifact
           path: dist
 
-      - name: Too many actions
+      - name: Package Mac App
         run: |
-          find dist -type f -exec chmod +x {} \;
+          chmod +x dist/em-image-downloader-darwin-amd64
           mkdir -p dist/em-image-downloader-darwin-amd64.app/Contents/MacOS
           mv dist/em-image-downloader-darwin-amd64 dist/em-image-downloader-darwin-amd64.app/Contents/MacOS/em-image-downloader-darwin-amd64
           chmod +x dist/em-image-downloader-darwin-amd64.app
 
-      - name: Setup certificate
+      - name: Sign Mac App
         env: 
           MACOS_CERTIFICATE: ${{ secrets.MACOS_SERTIFICATE }}
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERT_PWD }}
@@ -94,22 +87,17 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_KEYCHAIN_PWD build.keychain
           /usr/bin/codesign --force -s $MACOS_CERT_NAME dist/em-image-downloader-darwin-amd64.app -v
 
-      - name: Tar App
+      - name: Tar Mac App
         run: tar -zcvf em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
 
-      - name: Upload Mac Artifact
+      - name: Upload Signed Mac Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: mac-artifact
+          name: signed-mac-artifact
           path: em-image-downloader-darwin-amd64.tar.gz
-      
-      - name: Delete Tmp Artifact
-        uses: geekyeggo/delete-artifact@v2
-        with:
-          name: tmp-artifact
     
   publishmac:
-    name: Publish Mac App
+    name: Publish Apps
     needs: sign
     runs-on: ubuntu-latest
     steps:
@@ -117,20 +105,38 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v3
 
-        - name: Download Mac Artifact
+        - name: Download Signed Mac Artifact
           uses: actions/download-artifact@v3
           with:
-            name: mac-artifact
+            name: signed-mac-artifact
+            path: signed
+        
+        - name: Download Built Apps Artifact
+          uses: actions/download-artifact@v3
+          with:
+            name: built-apps-artifact
             path: dist
+        
+        - name: Publish Windows
+          uses: skx/github-action-publish-binaries@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            args: dist/em-image-downloader-windows-amd64.exe
 
         - name: Publish MacOS
           uses: skx/github-action-publish-binaries@master
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            args: dist/em-image-downloader-darwin-amd64.tar.gz
+            args: signed/em-image-downloader-darwin-amd64.tar.gz
 
-        - name: Delete Mac Artifact
+        - name: Delete Built Apps Artifact
           uses: geekyeggo/delete-artifact@v2
           with:
-            name: mac-artifact
+            name: built-apps-artifact
+        
+        - name: Delete Signed Apps Artifact
+          uses: geekyeggo/delete-artifact@v2
+          with:
+            name: signed-apps-artifact
