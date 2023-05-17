@@ -90,7 +90,7 @@ jobs:
       - name: Tar Mac App
         run: |
           mkdir to_upload
-          tar -zcvf to_artifact/em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
+          tar -zcvf to_upload/em-image-downloader-darwin-amd64.tar.gz dist/em-image-downloader-darwin-amd64.app
       
       - name: Move Other Apps to Artifact Folder
         run: |
