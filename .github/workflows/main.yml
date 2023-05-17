@@ -80,7 +80,7 @@ jobs:
 
       - name: Sign Mac App
         env: 
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_SERTIFICATE }}
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERT_PWD }}
           MACOS_KEYCHAIN_PWD: ${{ secrets.MACOS_KEYCHAIN_PWD }}
           MACOS_CERT_NAME: ${{ secrets.MACOS_CERT_NAME }}
