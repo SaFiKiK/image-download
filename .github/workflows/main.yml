@@ -139,4 +139,4 @@ jobs:
         - name: Delete Signed Apps Artifact
           uses: geekyeggo/delete-artifact@v2
           with:
-            name: signed-apps-artifact
+            name: signed-mac-artifact
